@@ -2416,7 +2416,7 @@
                     if (correctBtn && !correctBtn.disabled) {
                         selectAnswer({ target: correctBtn });
                     }
-                }, 1000); 
+                }, 2500); 
             }
         }
 
