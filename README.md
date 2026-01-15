@@ -14,6 +14,7 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
+            overflow: hidden;
         }
 
         .quiz-container {
@@ -24,6 +25,9 @@
             width: 100%;
             max-width: 600px;
             text-align: center;
+            position: relative;
+            transition: transform 0.2s ease;
+            transform-origin: center center;
         }
 
         h1 {
@@ -31,24 +35,120 @@
             margin-bottom: 10px;
         }
 
-        #completion-message {
-            color: #28a745;
+        /* --- HAMBURGER MENU ICON --- */
+        .menu-icon {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+            z-index: 1001;
+            user-select: none;
+            padding: 5px;
+        }
+
+        /* --- SETTINGS MENU PANEL --- */
+        .settings-menu {
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            padding: 15px;
+            width: 290px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: left;
+        }
+
+        .menu-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            color: #555;
+            font-weight: bold;
+        }
+
+        /* --- STYLE KONTROL PLUS/MINUS --- */
+        .number-control-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #f9f9f9;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .btn-control {
+            width: 30px;
+            height: 30px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
             font-size: 1.2em;
             font-weight: bold;
-            margin-top: 5px;
-            margin-bottom: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        .btn-control:hover { background-color: #0056b3; }
+        .btn-control:active { transform: scale(0.95); }
+
+        .control-value-text {
+            width: 20px;
+            text-align: center;
+            font-size: 1em;
+            color: #333;
         }
 
+        /* --- Toggle Switch Style (iOS) --- */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px; width: 20px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #28a745; }
+        input:focus + .slider { box-shadow: 0 0 1px #28a745; }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* --- Tampilan Counter --- */
         .question-counter-text {
-            font-size: 0.9em;
+            font-size: 1em;
             color: #666;
             margin-bottom: 20px;
+            display: block; 
+            min-height: 1.2em;
         }
 
-        #question-container {
-            margin-bottom: 20px;
-        }
-
+        #question-container { margin-bottom: 20px; }
         #question {
             font-size: 1.5em;
             font-weight: bold;
@@ -71,7 +171,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 1em;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            transition: background-color 0.2s ease;
             word-wrap: break-word;
             min-height: 50px;
             display: flex;
@@ -81,41 +181,11 @@
             font-weight: bold;
         }
 
-        .btn:not(.correct):not(.wrong):not(.skip-btn):not(.btn-prev-q) { background-color: #007bff; }
-        .btn:not(.correct):not(.wrong):not(.skip-btn):not(.btn-prev-q):focus {
-            background-color: #007bff;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
-        }
-        .btn:not([disabled]):not(.correct):not(.wrong):not(.skip-btn):not(.btn-prev-q):hover {}
-        .btn:not([disabled]):not(.correct):not(.wrong):not(.skip-btn):not(.btn-prev-q):focus:hover {
-            background-color: #007bff;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
-        }
-
-        .btn.correct { background-color: #28a745 !important; box-shadow: none; }
-        .btn.correct:hover { background-color: #218838 !important; }
-        .btn.correct:focus {
-            background-color: #28a745 !important;
-            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.6) !important;
-        }
-
-        .btn.wrong { background-color: #dc3545 !important; box-shadow: none; }
-        .btn.wrong:hover { background-color: #c82333 !important; }
-        .btn.wrong:focus {
-            background-color: #dc3545 !important;
-            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.6) !important;
-        }
-
-        .btn:disabled {
-            cursor: not-allowed;
-            opacity: 0.65;
-        }
-        /* Adjusted to not conflict with new button's disabled state if it's not a skip-btn or answer btn */
-        .btn:disabled:not(.correct):not(.wrong):not(.skip-btn):not(.btn-prev-q) {
-            background-color: #6c757d !important;
-            color: #ccc !important;
-        }
-
+        .btn:not(.correct):not(.wrong):not(.skip-btn):not(.btn-nav) { background-color: #007bff; }
+        .btn.correct { background-color: #28a745 !important; }
+        .btn.wrong { background-color: #dc3545 !important; }
+        .btn:disabled { cursor: not-allowed; opacity: 0.65; }
+        .btn:disabled:not(.correct):not(.wrong) { background-color: #6c757d !important; color: #ccc !important; }
 
         .controls {
             display: flex;
@@ -124,72 +194,115 @@
         }
 
         #skip-navigation-controls {
-            justify-content: space-between; /* Adjusted to space-around or similar if needed for 3 buttons */
+            justify-content: space-between; 
             margin-top: 40px;
             margin-bottom: 10px;
+            display: flex; 
+            align-items: center;
         }
 
-        .skip-btn { /* This style is for prev-50 and next-50 */
-            background-color: #28a745; /* Green */
-            color: white;
-            padding: 8px 12px;
-            font-size: 0.9em;
-            min-width: 80px; /* Ensures same width for all skip-type buttons */
+        .skip-btn { 
+            background-color: #28a745; color: white;
+            padding: 8px 12px; font-size: 0.9em; min-width: 60px; border-radius: 5px;
         }
-        .skip-btn:hover {
-            background-color: #218838; /* Darker Green */
-            color: white;
-        }
-        .skip-btn:disabled { /* Default disabled for green skip buttons */
-            background-color: #a3d8b0 !important;
-            color: #e9f5ec !important;
-            /* cursor: not-allowed; is inherited from .btn:disabled */
-            /* opacity: 0.65; is inherited from .btn:disabled */
-        }
+        .skip-btn:hover { background-color: #218838; }
+        .skip-btn:disabled { background-color: #a3d8b0 !important; }
 
-        /* New button style for "Previous Question" */
-        .btn-prev-q {
-            background-color: #5F9EA0; /* CadetBlue - "biru terang" */
-            color: white; /* Text color */
-            padding: 8px 12px; /* Same padding as skip-btn */
-            font-size: 0.9em; /* Same font size as skip-btn */
-            min-width: 80px; /* Same min-width as skip-btn */
+        .btn-nav {
+            background-color: #5F9EA0; color: white; 
+            padding: 8px 12px; font-size: 0.9em; min-width: 50px; border-radius: 5px;
+            font-weight: bold;
         }
-        .btn-prev-q:hover:not([disabled]) {
-            background-color: #4682B4; /* SteelBlue - darker for hover */
-            color: white;
-        }
-        .btn-prev-q:disabled {
-            background-color: #B0C4DE !important; /* LightSteelBlue - for disabled state */
-            color: #666666 !important; /* Darker text for readability on light blue */
-            /* opacity will be applied by .btn:disabled */
-        }
+        .btn-nav:hover:not([disabled]) { background-color: #4682B4; }
+        .btn-nav:disabled { background-color: #B0C4DE !important; color: #666666 !important; }
 
+        #completion-message {
+            color: #28a745; font-size: 1.2em; font-weight: bold;
+            margin-top: 5px; margin-bottom: 20px;
+        }
 
         .hide { display: none !important; }
     </style>
 </head>
 <body>
-    <div class="quiz-container">
+
+    <div class="quiz-container" id="main-container">
+        <div id="menu-icon" class="menu-icon">≡</div>
+
+        <div id="settings-menu" class="settings-menu hide">
+            
+            <div class="menu-row">
+                <span>Info Soal</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggle-counter" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <div class="menu-row">
+                <span>Tombol Next (&gt;)</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggle-next-btn">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <div class="menu-row">
+                <span>Zoom (1-10)</span>
+                <div class="number-control-wrapper">
+                    <button id="zoom-out-btn" class="btn-control">-</button>
+                    <span id="zoom-value-display" class="control-value-text">5</span>
+                    <button id="zoom-in-btn" class="btn-control">+</button>
+                </div>
+            </div>
+
+            <div class="menu-row">
+                <span>Next Soal (Detik)</span>
+                <div class="number-control-wrapper">
+                    <button id="timer-minus-btn" class="btn-control">-</button>
+                    <span id="timer-value-display" class="control-value-text">3</span>
+                    <button id="timer-plus-btn" class="btn-control">+</button>
+                </div>
+            </div>
+
+            <div class="menu-row">
+                <span>Otomatis Klik</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggle-auto-click">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+        </div>
+
         <h1>Pengetahuan Umum Dasar</h1>
         <p id="completion-message" class="hide">Selamat Kuis Sudah Selesai 🎉</p>
+        
         <div id="initial-controls" class="controls">
             <button id="start-btn" class="btn">Mulai</button>
             <button id="continue-btn" class="btn hide">Lanjutkan</button>
         </div>
+        
         <div id="question-counter" class="question-counter-text hide">0/0</div>
+        
         <div id="question-container" class="hide">
             <div id="question">Kata Bahasa Inggris</div>
             <div id="answer-buttons" class="btn-grid">
             </div>
+            
             <div id="skip-navigation-controls" class="controls hide">
                 <button id="prev-50-btn" class="btn skip-btn">&laquo; 50</button>
-                <button id="prev-question-btn" class="btn btn-prev-q">&lt;</button> <button id="next-50-btn" class="btn skip-btn">50 &raquo;</button>
+                <div style="display: flex; gap: 5px;">
+                    <button id="prev-question-btn" class="btn btn-nav">&lt;</button>
+                    <button id="next-question-btn" class="btn btn-nav hide">&gt;</button>
+                </div>
+                <button id="next-50-btn" class="btn skip-btn">50 &raquo;</button>
             </div>
         </div>
     </div>
 
     <script>
+        const mainContainer = document.getElementById('main-container');
         const startButton = document.getElementById('start-btn');
         const continueButton = document.getElementById('continue-btn');
         const initialControls = document.getElementById('initial-controls');
@@ -199,20 +312,139 @@
         const answerButtonsElement = document.getElementById('answer-buttons');
         const questionCounterElement = document.getElementById('question-counter');
 
+        // Navigasi
         const skipNavigationControls = document.getElementById('skip-navigation-controls');
         const prev50Button = document.getElementById('prev-50-btn');
-        const prevQuestionButton = document.getElementById('prev-question-btn'); // Referensi untuk tombol baru
+        const prevQuestionButton = document.getElementById('prev-question-btn');
+        const nextQuestionButton = document.getElementById('next-question-btn'); 
         const next50Button = document.getElementById('next-50-btn');
         const JUMP_AMOUNT = 50;
+
+        // Menu & Pengaturan Elements
+        const menuIcon = document.getElementById('menu-icon');
+        const settingsMenu = document.getElementById('settings-menu');
+        const toggleCounterInput = document.getElementById('toggle-counter');
+        const toggleNextBtnInput = document.getElementById('toggle-next-btn');
+        const toggleAutoClickInput = document.getElementById('toggle-auto-click');
+        
+        // ZOOM Elements
+        const zoomOutBtn = document.getElementById('zoom-out-btn');
+        const zoomInBtn = document.getElementById('zoom-in-btn');
+        const zoomValueDisplay = document.getElementById('zoom-value-display');
+        let currentZoomLevel = 5; 
+
+        // TIMER Elements
+        const timerMinusBtn = document.getElementById('timer-minus-btn');
+        const timerPlusBtn = document.getElementById('timer-plus-btn');
+        const timerValueDisplay = document.getElementById('timer-value-display');
+        let autoNextDelay = 3; 
 
         let orderedQuestions, currentQuestionIndex;
         let score = 0;
         let questionTimeout;
+        let autoClickTimeout; 
+        
+        // --- LOGIKA MENU PENGATURAN ---
 
-        // Daftar kata mentah dari PDF (Inggris: Indonesia) - Total 1580 kata
+        menuIcon.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            settingsMenu.classList.toggle('hide');
+        });
+        settingsMenu.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+        });
+        document.addEventListener('click', (e) => {
+            if (!settingsMenu.contains(e.target) && e.target !== menuIcon) {
+                settingsMenu.classList.add('hide');
+            }
+        });
+
+        // Info Soal
+        toggleCounterInput.addEventListener('change', updateCounterDisplay);
+        function updateCounterDisplay() {
+            if (!orderedQuestions) return;
+            const current = currentQuestionIndex + 1;
+            const total = orderedQuestions.length;
+            if (toggleCounterInput.checked) {
+                questionCounterElement.innerText = `${current} / ${total}`;
+                questionCounterElement.style.fontSize = "1em"; 
+            } else {
+                questionCounterElement.innerText = "∞";
+                questionCounterElement.style.fontSize = "1.2em"; 
+            }
+        }
+
+        // Tombol Next
+        toggleNextBtnInput.addEventListener('change', () => {
+            if (toggleNextBtnInput.checked) {
+                nextQuestionButton.classList.remove('hide');
+            } else {
+                nextQuestionButton.classList.add('hide');
+            }
+        });
+
+        // Zoom Control
+        function applyZoom() {
+            zoomValueDisplay.innerText = currentZoomLevel;
+            const scale = 0.5 + (currentZoomLevel * 0.1);
+            mainContainer.style.transform = `scale(${scale})`;
+        }
+        zoomOutBtn.addEventListener('click', (e) => {
+            if (currentZoomLevel > 1) {
+                currentZoomLevel--;
+                applyZoom();
+            }
+        });
+        zoomInBtn.addEventListener('click', (e) => {
+            if (currentZoomLevel < 10) {
+                currentZoomLevel++;
+                applyZoom();
+            }
+        });
+        applyZoom();
+
+        // Timer Control
+        function updateTimerDisplay() {
+            timerValueDisplay.innerText = autoNextDelay;
+        }
+        timerMinusBtn.addEventListener('click', (e) => {
+            if (autoNextDelay > 1) {
+                autoNextDelay--;
+                updateTimerDisplay();
+            }
+        });
+        timerPlusBtn.addEventListener('click', (e) => {
+            if (autoNextDelay < 15) {
+                autoNextDelay++;
+                updateTimerDisplay();
+            }
+        });
+        updateTimerDisplay(); 
+
+        // PERBAIKAN: LOGIKA EVENT LISTENER UNTUK AUTO KLIK
+        // Saat tombol digeser, langsung cek apakah bisa menjawab
+        toggleAutoClickInput.addEventListener('change', () => {
+            if (toggleAutoClickInput.checked) {
+                // Cek apakah sedang ada soal yang aktif dan belum dijawab
+                const correctBtn = Array.from(answerButtonsElement.children).find(b => b.dataset.correct === 'true');
+                if (correctBtn && !correctBtn.disabled) {
+                    // Jika ada soal aktif, langsung trigger auto answer dalam 1 detik
+                    clearTimeout(autoClickTimeout); // Bersihkan timer lama jika ada
+                    autoClickTimeout = setTimeout(() => {
+                        selectAnswer({ target: correctBtn });
+                    }, 1000);
+                }
+            } else {
+                // Jika dimatikan, batalkan timer yang sedang berjalan
+                clearTimeout(autoClickTimeout);
+            }
+        });
+
+
+        // --- LOGIKA KUIS ---
+
         const rawVocabularyList = [
-
-
+		
   { "en": "Apa Fungsi Perintah Line (AutoCAD)?", "id": "Membuat Garis Lurus." },
   { "en": "Apa Shortcut Untuk Perintah Circle (AutoCAD)?", "id": "Ketik C + Enter." },
   { "en": "Apa Fungsi Trim (AutoCAD)?", "id": "Memotong Garis Yang Bersinggungan." },
@@ -1971,10 +2203,8 @@
   { "en": "Apa Fungsi 'Meter' (GT Designer 3)?", "id": "Menampilkan Nilai Register Dalam Bentuk Jarum Analog." },
   { "en": "Apa Fungsi 'Video Player' (GT Designer 3)?", "id": "Memutar Video Tutorial Atau Rekaman Kamera CCTV." },
   { "en": "Apa Fungsi 'FTP Client' (GT Designer 3)?", "id": "Mengirim File Hasil Logging Ke Server Pusat." }
-
-
-
-
+			 
+			 
         ];
 
         let questions = [];
@@ -2003,22 +2233,7 @@
                     attempts++;
                 }
                 while (distractors.length < 3) {
-                    const fallbackOptions = ["opsi lain A", "opsi lain B", "opsi lain C", "opsi lain D", "opsi lain E", "opsi lain F"];
-                    let fallbackIndex = 0;
-                    let safetyNet = 0;
-                    while(distractors.length < 3 && safetyNet < fallbackOptions.length * 3) {
-                        const fbOption = fallbackOptions[fallbackIndex % fallbackOptions.length] + `_${distractors.length}${Math.floor(Math.random()*100)}`;
-                        if (fbOption !== correctAnswer && !distractors.includes(fbOption)) {
-                             distractors.push(fbOption);
-                        }
-                        fallbackIndex++;
-                        safetyNet++;
-                    }
-                     if(distractors.length < 3) {
-                        for(let i=0; i < (3-distractors.length); i++){
-                            distractors.push("pilihan default " + (i+1+distractors.length) + Math.random().toString(36).substring(7));
-                        }
-                     }
+                   distractors.push("Opsi " + Math.random());
                 }
                 const answerOptions = [
                     { text: correctAnswer, correct: true },
@@ -2051,18 +2266,13 @@
             if (savedProgress) {
                 try {
                     const progressData = JSON.parse(savedProgress);
-                    if (progressData && typeof progressData.currentQuestionIndex === 'number' &&
-                        typeof progressData.score === 'number' && Array.isArray(progressData.orderedQuestions) &&
-                        progressData.orderedQuestions.length > 0 &&
-                        progressData.currentQuestionIndex < progressData.orderedQuestions.length &&
-                        progressData.orderedQuestions.length === questions.length) { // Validasi tambahan: jumlah soal harus sama
+                    if (progressData && Array.isArray(progressData.orderedQuestions)) { 
                         return progressData;
                     } else {
                         clearProgress();
                         return null;
                     }
                 } catch (e) {
-                    console.error("Error parsing saved progress:", e);
                     clearProgress();
                     return null;
                 }
@@ -2075,11 +2285,15 @@
         }
 
         prev50Button.addEventListener('click', () => navigateQuestions(-JUMP_AMOUNT));
-        prevQuestionButton.addEventListener('click', () => navigateQuestions(-1)); // Event listener untuk tombol baru
+        prevQuestionButton.addEventListener('click', () => navigateQuestions(-1)); 
+        nextQuestionButton.addEventListener('click', () => navigateQuestions(1)); 
         next50Button.addEventListener('click', () => navigateQuestions(JUMP_AMOUNT));
+
 
         function navigateQuestions(amount) {
             clearTimeout(questionTimeout);
+            clearTimeout(autoClickTimeout);
+
             if (!orderedQuestions || orderedQuestions.length === 0) return;
 
             let newIndex = currentQuestionIndex + amount;
@@ -2097,9 +2311,6 @@
         function updateSkipButtonStates() {
             if (!orderedQuestions || orderedQuestions.length === 0 || questionContainerElement.classList.contains('hide')) {
                 skipNavigationControls.classList.add('hide');
-                if(prev50Button) prev50Button.disabled = true;
-                if(prevQuestionButton) prevQuestionButton.disabled = true; // Nonaktifkan tombol baru
-                if(next50Button) next50Button.disabled = true;
                 return;
             }
             skipNavigationControls.classList.remove('hide');
@@ -2107,14 +2318,10 @@
             const isLastQuestion = currentQuestionIndex === (orderedQuestions.length - 1);
 
             if(prev50Button) prev50Button.disabled = isFirstQuestion;
-            if(prevQuestionButton) prevQuestionButton.disabled = isFirstQuestion; // Atur status disabled tombol baru
+            if(prevQuestionButton) prevQuestionButton.disabled = isFirstQuestion; 
+            
+            if(nextQuestionButton) nextQuestionButton.disabled = isLastQuestion;
             if(next50Button) next50Button.disabled = isLastQuestion;
-
-            if (orderedQuestions.length <= 1) {
-                if(prev50Button) prev50Button.disabled = true;
-                if(prevQuestionButton) prevQuestionButton.disabled = true; // Atur status disabled tombol baru
-                if(next50Button) next50Button.disabled = true;
-            }
         }
 
 
@@ -2130,10 +2337,9 @@
             if (questionContainerElement.classList.contains('hide')) {
                 initialControls.classList.remove('hide');
                 skipNavigationControls.classList.add('hide');
+                questionCounterElement.classList.add('hide');
             } else {
                  initialControls.classList.add('hide');
-                 // Mungkin juga perlu updateSkipButtonStates() di sini jika kuis dilanjutkan
-                 // dan langsung menampilkan soal.
             }
         });
 
@@ -2176,7 +2382,7 @@
         function setNextQuestion() {
             resetState();
             if (orderedQuestions && currentQuestionIndex < orderedQuestions.length) {
-                questionCounterElement.innerText = `${currentQuestionIndex + 1} / ${orderedQuestions.length}`;
+                updateCounterDisplay(); 
                 showQuestion(orderedQuestions[currentQuestionIndex]);
                 saveProgress();
                 if (document.activeElement && typeof document.activeElement.blur === 'function') {
@@ -2185,7 +2391,7 @@
             } else {
                 showResults();
             }
-            updateSkipButtonStates(); // Panggil di sini untuk memastikan state tombol selalu update
+            updateSkipButtonStates(); 
         }
 
         function showQuestion(questionData) {
@@ -2202,10 +2408,21 @@
                 button.addEventListener('click', selectAnswer);
                 answerButtonsElement.appendChild(button);
             });
+
+            // LOGIKA OTOMATIS KLIK
+            if (toggleAutoClickInput.checked) {
+                autoClickTimeout = setTimeout(() => {
+                    const correctBtn = Array.from(answerButtonsElement.children).find(b => b.dataset.correct === 'true');
+                    if (correctBtn && !correctBtn.disabled) {
+                        selectAnswer({ target: correctBtn });
+                    }
+                }, 1000); 
+            }
         }
 
         function resetState() {
             clearTimeout(questionTimeout);
+            clearTimeout(autoClickTimeout); 
             while (answerButtonsElement.firstChild) {
                 answerButtonsElement.removeChild(answerButtonsElement.firstChild);
             }
@@ -2216,10 +2433,15 @@
             const correct = selectedButton.dataset.correct === 'true';
             if (correct) { score++; }
             Array.from(answerButtonsElement.children).forEach(button => {
-                setStatusClass(button, button.dataset.correct === 'true');
+                if (button.dataset.correct === 'true') {
+                    button.classList.add('correct');
+                } else {
+                    button.classList.add('wrong');
+                }
                 button.disabled = true;
             });
             saveProgress();
+            
             questionTimeout = setTimeout(() => {
                 if (orderedQuestions && currentQuestionIndex < orderedQuestions.length -1) {
                     currentQuestionIndex++;
@@ -2227,28 +2449,17 @@
                 } else if (orderedQuestions && currentQuestionIndex === orderedQuestions.length -1) {
                     showResults();
                 }
-            }, 7000);
-        }
-
-        function setStatusClass(element, correct) {
-            clearStatusClass(element);
-            if (correct) { element.classList.add('correct'); }
-            else { element.classList.add('wrong'); }
-        }
-
-        function clearStatusClass(element) {
-            element.classList.remove('correct');
-            element.classList.remove('wrong');
+            }, autoNextDelay * 1000); 
         }
 
         function showResults() {
             clearTimeout(questionTimeout);
+            clearTimeout(autoClickTimeout);
             questionContainerElement.classList.add('hide');
-            questionCounterElement.classList.add('hide');
+            questionCounterElement.classList.add('hide'); 
             skipNavigationControls.classList.add('hide');
             clearProgress();
             completionMessageElement.innerText = "Selamat Kuis Sudah Selesai 🎉";
-            completionMessageElement.style.color = "#28a745";
             completionMessageElement.classList.remove('hide');
             startButton.innerText = 'Ulangi Kuis';
             initialControls.classList.remove('hide');
